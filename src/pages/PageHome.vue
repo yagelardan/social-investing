@@ -12,9 +12,10 @@
             counter
             autogrow
           >
+          
             <template v-slot:before>
               <q-avatar size="xl">
-                <img src="https://s.gravatar.com/avatar/ce7f3697e231df38b3ca6065848520da?s=80">
+                <img :src="profile_pic">
               </q-avatar>
             </template>
           </q-input>
@@ -107,12 +108,14 @@
 
 <script>
 import db from 'src/boot/firebase'
+import { store } from '../store/store'
 import { formatDistance } from 'date-fns'
 
 export default {
   name: 'PageHome',
   data() {
     return {
+      profile_pic: store.state.user.profile_pic,
       newQweetContent: '',
       qweets: [
         // {
