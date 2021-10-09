@@ -3,7 +3,15 @@ import VueRouter from 'vue-router'
 
 import routes from './routes'
 
+
+import { store } from '../store/store'
+console.log("aaaaaa")
+
+//store.state.user.loggedIn = true;
+//console.log(store.state.user.loggedIn)
+
 Vue.use(VueRouter)
+
 
 
 
@@ -45,14 +53,35 @@ const gauthOption = {
 }
 Vue.use(GAuth, gauthOption)
 
+
 // Require dependencies
 var VueCookie = require('vue-cookie');
 // Tell Vue to use the plugin
 Vue.use(VueCookie);
 
 
+//import Vuex from 'vuex'
+//Vue.use(Vuex)
+
 new Vue({
+  store: store,
   render: h => h(App),
 }).$mount('#app')
 
 
+/*
+const store = new Vuex.Store({
+  state: {
+      user: {
+          loggedIn: false,
+          isSubscribed: false
+      }
+  },
+
+  getters: {
+      auth(state) {
+          return state.user
+      }
+  }
+})
+*/

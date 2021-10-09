@@ -1,13 +1,26 @@
+//import { store } from 'quasar/wrappers'
+import { store } from '../store/store'
+
 
 const routes = [
   {
+    
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
+        // todo: change to dashboard
         path: '',
         component: () => import('pages/PageHome.vue'),
-        name: 'Home'
+        name: 'Home',
+        beforeEnter: (to, from, next) => {
+          if(!store.state.user.loggedIn){
+            return next({
+              name: 'Login'
+            })
+          }
+          next()
+        }
       },
       { 
         path: '/about',
@@ -17,7 +30,15 @@ const routes = [
       { 
         path: '/login',
         component: () => import('pages/PageLogin.vue'),
-        name: 'Login'
+        name: 'Login',
+        beforeEnter: (to, from, next) => {
+          if(store.state.user.loggedIn){
+            return next({
+              name: 'Home'
+            })
+          }
+          next()
+        }
       }
     ]
   },
@@ -29,5 +50,8 @@ const routes = [
     component: () => import('pages/Error404.vue')
   }
 ]
+console.log("hhhhhhhhhhh")
+console.log(store.state.user.loggedIn)
+
 
 export default routes

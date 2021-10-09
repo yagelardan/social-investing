@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import { store } from '../store/store'
+
 export default {
   name: "App",
   data() {
@@ -18,7 +20,10 @@ export default {
   methods: {
     isGoogleLoggedin(){
         console.log("check is logged in")
+        console.log("aaaaaaaaaaabbbbbbbb")
+        console.log(store.state.user.loggedIn)
 
+        
         // todo: the function doesnt check the credentials to check wheter the auth is correct.
         // In order to fix this problem: 1. use the google auth to check every time.
         // 2. store the user id and access token in the db, and check if they the same.
@@ -30,7 +35,10 @@ export default {
             const gogUserAccessToken = gogUser.$b.access_token;
             if(gogUserId.length > 10 && gogUserAccessToken.length >10){
                 // not really checked if logged in correctly.
+                //store.state.user.loggedIn = true; //check
+                //next()
                 console.log("user logged in");
+                
                 return true;
             }
         }catch(error){
@@ -58,6 +66,11 @@ export default {
         this.$gAuth.GoogleAuth.currentUser.get().getAuthResponse()
       );
       this.isLogin = this.$gAuth.isAuthorized;
+      if(this.isLogin == true){
+            //change state, and to go home
+            store.state.user.loggedIn = true; 
+            this.$router.push({name: 'Home'})
+      }
 
     },
   },
