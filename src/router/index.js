@@ -41,6 +41,9 @@ export default function (/* { store, ssrContext } */) {
 
 
 import App from 'pages/PageLogin.vue'
+import Logout from 'pages/PageLogout.vue'
+import MainLayout from 'layouts/MainLayout.vue'
+
 
 Vue.config.productionTip = false
 
@@ -67,6 +70,17 @@ new Vue({
   store: store,
   render: h => h(App),
 }).$mount('#app')
+
+new Vue({
+  store: store,
+  render: h => h(Logout),
+})//.$mount('#Logout')
+
+
+new Vue({
+  store: store,
+  render: h => h(MainLayout),
+})//.$mount('#Logout')
 
 
 /*

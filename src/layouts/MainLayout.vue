@@ -57,6 +57,35 @@
 
           <q-item-section class="text-h6 text-weight-bold">About</q-item-section>
         </q-item>
+        <div style="bottom: 1em; position: absolute;">
+          <q-item
+            to="/about"
+            v-ripple
+            clickable
+            exact
+            bottom
+          >
+            <q-item-section avatar>
+              <q-icon name="person" size="md" />
+            </q-item-section>
+
+            <q-item-section class="text-h6 text-weight-bold">Profile</q-item-section>
+          </q-item>
+
+          <q-item
+            @click="logout()"
+            v-ripple
+            clickable
+            exact
+          > 
+        
+          <q-item-section avatar>
+            <q-icon name="logout" size="md" />
+          </q-item-section>
+
+          <q-item-section class="text-h6 text-weight-bold">Logout</q-item-section>
+        </q-item>
+        </div>
       </q-list>
 
     </q-drawer>
@@ -124,14 +153,27 @@
 </template>
 
 <script>
+import { store } from '../store/store'
+
 export default {
+  name: 'MainLayout',
   data () {
     return {
       left: false,
       right: false
     }
+  },
+  methods: {
+      logout(){
+        store.commit('logout');
+        console.log("aaaaa")
+        console.log(store.state.user.loggedIn)
+
+        this.$router.push({name: 'Login'})
+      }
+    }
   }
-}
+
 </script>
 
 <style lang="sass">
