@@ -4,13 +4,13 @@
     <button @click="login()">Login</button>
     Is login: ? {{ isLogin }}
     <button @click="logOut()">LogOut</button>
-  </div>
+  </div> 
 </template>
 
 <script>
 import db from 'src/boot/firebase'
 import { store } from '../store/store'
-import { el } from 'date-fns/locale';
+//import { el } from 'date-fns/locale';
 
 export default {
   name: "App",
@@ -20,18 +20,43 @@ export default {
     };
   },
   methods: {
-    registerUser(user){
-      //let newUser = {
-      //  name: user_name,
-      //  date: Date.now()
-      //}
-      // this.qweets.unshift(newQweet)
-      db.collection('users').add(user).then(function(docRef) {
-        console.log('Document written with ID: ', docRef.id)
-      }).catch(function(error) {
-        console.error('Error adding document: ', error)
-      })
-
+    does_user_already_exist(user_doc_id){
+        console.log(user_doc_id)
+        var docRef = db.collection("users").doc(user_doc_id);
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                console.log("Document data:", doc.data());
+                return true;
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                return false;
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+            return false;
+        });
+    },
+    register_or_login_user(login_source, user){
+        var user_doc_id = login_source + '-' + user.userid;
+        var docRef = db.collection("users").doc(user_doc_id);
+        user['user_doc_id'] = user_doc_id
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                console.log("user already exists: " + user_doc_id)
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("adding new user: " + user_doc_id)
+                db.collection('users').doc(user_doc_id).set(user)
+                console.log("No such document!");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+        //// change state, and to go home
+        this.$cookie.set('current-user', JSON.stringify(user));
+        store.commit('login');
+        this.$router.push({name: 'Home'})
     },
     isGoogleLoggedin(){
         console.log("check is logged in")
@@ -47,7 +72,7 @@ export default {
         }
         /*
         try{
-            var gogUser = JSON.parse(this.$cookie.get('googleUser'));
+           
             console.log("gogUser");
             console.log(gogUser);
             const gogUserId = gogUser.ya;
@@ -71,16 +96,16 @@ export default {
         */
     },
 
-    async logOut() {
-      const result = await this.$gAuth.signOut();
-      this.isLogin = false;
-      this.$cookie.delete('googleUser');
-      console.log(`result`, result);
-    },
+    //async logOut() {
+    //  const result = await this.$gAuth.signOut();
+    //  this.isLogin = false;
+    //  this.$cookie.delete('googleUser');
+    //  console.log(`result`, result);
+    //},
     async login() {
       const googleUser = await this.$gAuth.signIn();
       console.log("googleUser", googleUser);
-      this.$cookie.set('googleUser', JSON.stringify(googleUser));
+      //this.$cookie.set('googleUser', JSON.stringify(googleUser));
       console.log("getId", googleUser.getId());
       console.log("getBaseProfile", googleUser.getBasicProfile());
       console.log("getAuthResponse", googleUser.getAuthResponse());
@@ -93,23 +118,21 @@ export default {
             const user = {
                 login_source: "google",
                 userid: googleUser.ya,
-                id_token: googleUser.$b.id_token,
+                login_hint: googleUser.$b.login_hint,
                 firstname: googleUser.it.HU,
                 lastname: googleUser.it.YS,
                 profile_pic: googleUser.it.kK,
                 mail: googleUser.it.Tt,
             }
-            //!is_user_already_exist(login_source, user_id) => create user
+            store.state.user.profile_pic = googleUser.it.kK
+
             
-            this.registerUser(user)
-            //store.commit('login')
 
-            //// change state, and to go home
-            //store.state.user.loggedIn = true; 
-            store.commit('login');
-            this.$router.push({name: 'Home'})
+            var login_source = "google"
+            
+            this.register_or_login_user(login_source, user);
+
       }
-
     },
   },
 };

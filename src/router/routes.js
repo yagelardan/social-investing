@@ -14,9 +14,7 @@ const routes = [
         component: () => import('pages/PageHome.vue'),
         name: 'Home',
         beforeEnter: (to, from, next) => {
-          console.log("sahdjkahskdjhaskjdhsk")
           if(!store.state.user.loggedIn){
-            console.log("lllllllllll")
             return next({
               name: 'Login'
             })
@@ -28,11 +26,6 @@ const routes = [
         path: '/about',
         component: () => import('pages/PageAbout.vue'),
         name: 'About'
-      },
-      { 
-        path: '/logout',
-        component: () => import('pages/PageLogout.vue'),
-        name: 'Logout'
       },
       { 
         path: '/login',

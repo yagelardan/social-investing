@@ -15,7 +15,7 @@
           
             <template v-slot:before>
               <q-avatar size="xl">
-                <img :src="profile_pic">
+                <img :src="user.profile_pic">
               </q-avatar>
             </template>
           </q-input>
@@ -53,7 +53,8 @@
           >
             <q-item-section avatar top>
               <q-avatar size="xl">
-                <img src="https://s.gravatar.com/avatar/ce7f3697e231df38b3ca6065848520da?s=80">
+                
+                <img :src="qweet.profile_pic">
               </q-avatar>
             </q-item-section>
 
@@ -111,11 +112,14 @@ import db from 'src/boot/firebase'
 import { store } from '../store/store'
 import { formatDistance } from 'date-fns'
 
+
 export default {
   name: 'PageHome',
   data() {
     return {
-      profile_pic: store.state.user.profile_pic,
+      user: this.get_user(),
+      //profile_pic: store.state.user.profile_pic,
+      //profile_pic: this.get_profile_pic(this.user_id),
       newQweetContent: '',
       qweets: [
         // {
@@ -134,15 +138,33 @@ export default {
     }
   },
   methods: {
+    get_user(){
+      var user = JSON.parse(this.$cookie.get('current-user'))
+      return user;
+    },
+    /*
+    get_profile_pic(user_id){
+      console.log("hhhhhhhh")
+      console.log("aaaaaa" + this.get_user_id())
+      var docRef = db.collection("users").doc(user_id)
+      console.log("iiiiiii")
+      docRef.get().then((doc) => {
+        console.log(doc.data)
+      })
+      console.log("jjjjjj")
+      return ""
+    },
+    */
     addNewQweet() {
       let newQweet = {
         content: this.newQweetContent,
+        user_id: this.user.user_doc_id,
         date: Date.now(),
         liked: false
       }
       // this.qweets.unshift(newQweet)
       db.collection('qweets').add(newQweet).then(function(docRef) {
-        console.log('Document written with ID: ', docRef.id)
+        console.log('User document written with ID: ', docRef.id)
       }).catch(function(error) {
         console.error('Error adding document: ', error)
       })
@@ -178,8 +200,9 @@ export default {
       snapshot.docChanges().forEach(change => {
         let qweetChange = change.doc.data()
         qweetChange.id = change.doc.id
+        qweetChange.profile_pic = "https://i.pinimg.com/originals/bb/d3/f1/bbd3f101733f1a7d8bdc9c6b5aed7776.png"
         if (change.type === 'added') {
-          console.log('New qweet: ', qweetChange)
+          //console.log('New qweet: ', qweetChange)
           this.qweets.unshift(qweetChange)
         }
         if (change.type === 'modified') {

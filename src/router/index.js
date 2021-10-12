@@ -5,7 +5,7 @@ import routes from './routes'
 
 
 import { store } from '../store/store'
-console.log("aaaaaa")
+
 
 //store.state.user.loggedIn = true;
 //console.log(store.state.user.loggedIn)
@@ -41,8 +41,8 @@ export default function (/* { store, ssrContext } */) {
 
 
 import App from 'pages/PageLogin.vue'
-import Logout from 'pages/PageLogout.vue'
 import MainLayout from 'layouts/MainLayout.vue'
+
 
 
 Vue.config.productionTip = false
@@ -69,33 +69,11 @@ Vue.use(VueCookie);
 new Vue({
   store: store,
   render: h => h(App),
-}).$mount('#app')
+})//.$mount('#app')
 
-new Vue({
-  store: store,
-  render: h => h(Logout),
-})//.$mount('#Logout')
 
 
 new Vue({
   store: store,
   render: h => h(MainLayout),
 })//.$mount('#Logout')
-
-
-/*
-const store = new Vuex.Store({
-  state: {
-      user: {
-          loggedIn: false,
-          isSubscribed: false
-      }
-  },
-
-  getters: {
-      auth(state) {
-          return state.user
-      }
-  }
-})
-*/

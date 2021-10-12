@@ -166,9 +166,8 @@ export default {
   methods: {
       logout(){
         store.commit('logout');
-        console.log("aaaaa")
+        this.$cookie.delete('current-user');
         console.log(store.state.user.loggedIn)
-
         this.$router.push({name: 'Login'})
       }
     }
