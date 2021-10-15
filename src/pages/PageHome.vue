@@ -199,8 +199,51 @@ export default {
     db.collection('qweets').orderBy('date').onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         let qweetChange = change.doc.data()
+        qweetChange.profile_pic = ""
         qweetChange.id = change.doc.id
-        qweetChange.profile_pic = "https://i.pinimg.com/originals/bb/d3/f1/bbd3f101733f1a7d8bdc9c6b5aed7776.png"
+        //qweetChange.profile_pic = "https://i.pinimg.com/originals/bb/d3/f1/bbd3f101733f1a7d8bdc9c6b5aed7776.png"
+        
+
+        /*
+        var post_user_doc = db.collection('users').doc(qweetChange.user_id)
+        post_user_doc.get().then((doc) => {
+            if (doc.exists) {
+                console.log("Post user document data:", doc.data());
+                qweetChange.profile_pic = post_user_doc.profile_pic
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such post user document! " + qweetChange.user_id);
+                qweetChange.profile_pic = ""
+            }
+            console.log("aaaaaaa " + JSON.parse(post_user_doc))
+            console.log("bbbbbbb1 " + JSON.stringify(post_user_doc)['profile_pic'])
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+            qweetChange.profile_pic = ""
+        });
+        */
+       // retrieve a document
+      db.collection('users')
+        .doc(qweetChange.user_id)
+        .get()
+        .then(snapshot => {
+          const document = snapshot.data()
+          console.log("oooooooo")
+          console.log(document)
+          if(1==1){ //(document.exists) {
+              console.log(document.profile_pic)
+              qweetChange.profile_pic = document.profile_pic
+          }else{
+              console.log("No such post user document! " + qweetChange.user_id);
+              qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
+          }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+            qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
+        });
+        
+        
+
         if (change.type === 'added') {
           //console.log('New qweet: ', qweetChange)
           this.qweets.unshift(qweetChange)
