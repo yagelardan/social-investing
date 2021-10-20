@@ -2,6 +2,27 @@
   <q-page class="relative-position">
     <q-scroll-area class="absolute full-width full-height">
       <div class="q-py-lg q-px-md row items-end q-col-gutter-md">
+            <q-item-section avatar top>
+              <q-avatar size="xl">
+                <img :src="get_post().profile_pic">
+              </q-avatar>
+            </q-item-section>
+            
+            <q-item-section>
+              <q-item-label class="text-subtitle1">
+                <strong>Danny Connell</strong>
+                <span class="text-grey-7">
+                  @danny__connell 
+                  <!--<br class="lt-md">&bull; {{ get_post().date | relativeDate }}-->
+                </span>
+              </q-item-label>
+              <q-item-label class="qweet-content text-body1">{{post_cont}}</q-item-label>
+            </q-item-section>
+        
+
+
+
+        <!--
         <div class="col">
           <q-input
             v-model="newQweetContent"
@@ -32,6 +53,7 @@
             no-caps
           />
         </div>
+        -->
       </div>
 
       <q-separator
@@ -40,12 +62,14 @@
         size="10px"
       />
 
+   
       <q-list separator>
         <transition-group
           appear
           enter-active-class="animated fadeIn slow"
           leave-active-class="animated fadeOut slow"
         >
+        <!--
           <q-item
             v-for="qweet in qweets"
             :key="qweet.id"
@@ -57,7 +81,7 @@
                 <img :src="qweet.profile_pic">
               </q-avatar>
             </q-item-section>
-
+            
             <q-item-section>
               <q-item-label class="text-subtitle1">
                 <strong>Danny Connell</strong>
@@ -102,6 +126,7 @@
               </div>
             </q-item-section>
           </q-item>
+          -->
         </transition-group>
       </q-list>
     </q-scroll-area>
@@ -115,10 +140,14 @@ import { formatDistance } from 'date-fns'
 
 
 export default {
-  name: 'PageHome',
+  name: 'PagePost',
   data() {
     return {
       user: this.get_user(),
+      post: this.get_post(),
+      post_cont: "",
+      postid: "",
+      //post_content : this.get_post_content(),
       //profile_pic: store.state.user.profile_pic,
       //profile_pic: this.get_profile_pic(this.user_id),
       newQweetContent: '',
@@ -143,6 +172,72 @@ export default {
       var user = JSON.parse(this.$cookie.get('current-user'))
       return user;
     },
+    async get_post(){
+        //return "https://media.vanityfair.com/photos/5ef25d9d184617200a49bac5/4:3/w_2999,h_2249,c_limit/M8DBATM_WB002.jpg"
+        console.log("url parameters:")
+        var post_id = this.$route.query.id
+        console.log(post_id)
+        var post = {
+            id: post_id,
+        }
+        post.content = "hi"
+        post.profile_pic =  "https://media.vanityfair.com/photos/5ef25d9d184617200a49bac5/4:3/w_2999,h_2249,c_limit/M8DBATM_WB002.jpg"
+
+        await db.collection('qweets').doc(post_id).get().then(snapshot => {
+        
+          const document = snapshot.data()
+          console.log("hello again")
+          console.log(document)
+          if(1==1){ //(document.exists) {
+              console.log(document.user_id)
+              post.user_id = document.user_id
+              post.date = document.date
+              post.content = document.content
+              console.log("222222222")
+              console.log(document.content)
+              console.log('post content:')
+              console.log(post.content)
+              //return post
+          }else{
+              console.log("No such post document! " + qweetChange.user_id);
+              //qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
+          }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+            //qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
+        });
+
+        //post.profile_pic = "https://media.vanityfair.com/photos/5ef25d9d184617200a49bac5/4:3/w_2999,h_2249,c_limit/M8DBATM_WB002.jpg"
+
+
+        //this.qweet_post.unshift(post)
+        return post
+    },
+    async get_post_content(){
+        var post_id = this.$route.query.id
+        console.log("post id " + post_id)
+        var post_cont = "a"
+        await db.collection('qweets').doc(post_id).get().then(snapshot => {
+        
+          const document = snapshot.data()
+          post_cont = document.content;
+          console.log("iiiiiii " + post_cont)
+          if(1==1){ //(document.exists) {
+              console.log("aaaaaaa " + post_cont)
+              //return document.content;
+              return post_cont
+          }else{
+              console.log("No such post document! " + qweetChange.user_id);
+              //qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
+          }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+            //qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
+        });
+        console.log("jjjjjj " + post_cont)
+        return post_cont;
+    },
+
     /*
     get_profile_pic(user_id){
       console.log("hhhhhhhh")
@@ -203,6 +298,16 @@ export default {
     }
   },
   mounted() {
+    this.postid =  this.$route.query.id
+
+    db.collection('qweets').doc(this.postid).get().then(snapshot => {
+        const document = snapshot.data()
+        this.post_cont = document.content;
+    }).catch((error) => {
+        console.log("Error getting document:", error);
+    });
+
+    
     db.collection('qweets').orderBy('date').onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         let qweetChange = change.doc.data()
@@ -232,8 +337,8 @@ export default {
        // retrieve a document
       db.collection('users').doc(qweetChange.user_id).get().then(snapshot => {
           const document = snapshot.data()
-          console.log("oooooooo")
-          console.log(document)
+          //console.log("oooooooo")
+          //console.log(document)
           if(1==1){ //(document.exists) {
               console.log(document.profile_pic)
               qweetChange.profile_pic = document.profile_pic
@@ -284,3 +389,6 @@ export default {
 .qweet-icons
   margin-left: -5px
 </style>
+
+
+

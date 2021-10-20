@@ -15,6 +15,7 @@ const routes = [
         name: 'Home',
         beforeEnter: (to, from, next) => {
           if(!store.state.user.loggedIn){
+          //if(!this.$cookie.get('current-user')){
             return next({
               name: 'Login'
             })
@@ -26,6 +27,11 @@ const routes = [
         path: '/about',
         component: () => import('pages/PageAbout.vue'),
         name: 'About'
+      },
+      { 
+        path: '/post',
+        component: () => import('pages/PagePost.vue'),
+        name: 'Post'
       },
       { 
         path: '/login',

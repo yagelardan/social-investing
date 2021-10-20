@@ -42,8 +42,7 @@ export default function (/* { store, ssrContext } */) {
 
 import App from 'pages/PageLogin.vue'
 import MainLayout from 'layouts/MainLayout.vue'
-
-
+import Post from 'pages/PagePost.vue'
 
 Vue.config.productionTip = false
 
@@ -67,6 +66,9 @@ Vue.use(VueCookie);
 //Vue.use(Vuex)
 
 new Vue({
+  created(){
+    console.log("hiiiii")
+  },
   store: store,
   render: h => h(App),
 })//.$mount('#app')
@@ -76,4 +78,9 @@ new Vue({
 new Vue({
   store: store,
   render: h => h(MainLayout),
+})//.$mount('#Logout')
+
+new Vue({
+  store: store,
+  render: h => h(Post),
 })//.$mount('#Logout')
