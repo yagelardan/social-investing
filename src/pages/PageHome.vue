@@ -74,6 +74,7 @@
                   size="sm"
                   flat
                   round
+                  to=""
                   @click="goToPostPage(qweet)"
                 />
                 <q-btn
@@ -239,11 +240,11 @@ export default {
               qweetChange.profile_pic = document.profile_pic
           }else{
               console.log("No such post user document! " + qweetChange.user_id);
-              qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
+              qweetChange.profile_pic = ""
           }
         }).catch((error) => {
             console.log("Error getting document:", error);
-            qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
+            qweetChange.profile_pic = ""
         });
         
         

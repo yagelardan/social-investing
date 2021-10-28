@@ -4,30 +4,34 @@
       <div class="q-py-lg q-px-md row items-end q-col-gutter-md">
             <q-item-section avatar top>
               <q-avatar size="xl">
-                <img :src="get_post().profile_pic">
+                <!--<img :src="get_post().profile_pic">-->
+                <img src="">
               </q-avatar>
             </q-item-section>
-            
             <q-item-section>
               <q-item-label class="text-subtitle1">
-                <strong>Danny Connell</strong>
+                <strong>Yagel Ardan</strong>
                 <span class="text-grey-7">
                   @danny__connell 
                   <!--<br class="lt-md">&bull; {{ get_post().date | relativeDate }}-->
                 </span>
               </q-item-label>
-              <q-item-label class="qweet-content text-body1">{{post_cont}}</q-item-label>
+              <q-item-label class="qweet-content text-body1">{{post.content}}</q-item-label>
             </q-item-section>
         
+      </div>
 
-
-
-        <!--
+      <q-separator
+        class="divider"
+        color="grey-2"
+        size="10px"
+      />
+    <div class="q-py-lg q-px-md row items-end q-col-gutter-md">
         <div class="col">
           <q-input
             v-model="newQweetContent"
             class="new-qweet"
-            placeholder="What's happening?"
+            placeholder="Share your opinion on the post"
             maxlength="280"
             bottom-slots
             counter
@@ -53,14 +57,7 @@
             no-caps
           />
         </div>
-        -->
-      </div>
-
-      <q-separator
-        class="divider"
-        color="grey-2"
-        size="10px"
-      />
+    </div>
 
    
       <q-list separator>
@@ -69,7 +66,7 @@
           enter-active-class="animated fadeIn slow"
           leave-active-class="animated fadeOut slow"
         >
-        <!--
+        
           <q-item
             v-for="qweet in qweets"
             :key="qweet.id"
@@ -87,7 +84,7 @@
                 <strong>Danny Connell</strong>
                 <span class="text-grey-7">
                   @danny__connell 
-                  <br class="lt-md">&bull; {{ qweet.date | relativeDate }}
+                  <br class="lt-md">&bull; {{ qweet.date }} //| relativeDate }}
                 </span>
               </q-item-label>
               <q-item-label class="qweet-content text-body1">{{ qweet.content }}</q-item-label>
@@ -126,7 +123,7 @@
               </div>
             </q-item-section>
           </q-item>
-          -->
+          
         </transition-group>
       </q-list>
     </q-scroll-area>
@@ -137,19 +134,23 @@
 import db from 'src/boot/firebase'
 import { store } from '../store/store'
 import { formatDistance } from 'date-fns'
+import { parse } from 'date-fns/esm'
 
 
 export default {
   name: 'PagePost',
   data() {
+    //this.render_page()
+    //var post = this.get_post_data()
+
+    //this.render_page(post.id)
+        var post = this.get_post_data()
+        this.post = post    
+        this.render_page(post.id)
+    
     return {
-      user: this.get_user(),
-      post: this.get_post(),
-      post_cont: "",
-      postid: "",
-      //post_content : this.get_post_content(),
-      //profile_pic: store.state.user.profile_pic,
-      //profile_pic: this.get_profile_pic(this.user_id),
+      user: {},
+      post: post,
       newQweetContent: '',
       qweets: [
         // {
@@ -157,12 +158,6 @@ export default {
         //   content: 'Be your own hero, its cheaper than a movie ticket.',
         //   date: 1611653238221,
         //   liked: false
-        // },
-        // {
-        //   id: 'ID2',
-        //   content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed feugiat justo id viverra consequat. Integer feugiat lorem faucibus est ornare scelerisque. Donec tempus, nunc vitae semper sagittis, odio magna semper ipsum, et laoreet sapien mauris vitae arcu.',
-        //   date: 1611653252444,
-        //   liked: true
         // },
       ]
     }
@@ -172,94 +167,15 @@ export default {
       var user = JSON.parse(this.$cookie.get('current-user'))
       return user;
     },
-    async get_post(){
-        //return "https://media.vanityfair.com/photos/5ef25d9d184617200a49bac5/4:3/w_2999,h_2249,c_limit/M8DBATM_WB002.jpg"
-        console.log("url parameters:")
-        var post_id = this.$route.query.id
-        console.log(post_id)
-        var post = {
-            id: post_id,
-        }
-        post.content = "hi"
-        post.profile_pic =  "https://media.vanityfair.com/photos/5ef25d9d184617200a49bac5/4:3/w_2999,h_2249,c_limit/M8DBATM_WB002.jpg"
-
-        await db.collection('qweets').doc(post_id).get().then(snapshot => {
-        
-          const document = snapshot.data()
-          console.log("hello again")
-          console.log(document)
-          if(1==1){ //(document.exists) {
-              console.log(document.user_id)
-              post.user_id = document.user_id
-              post.date = document.date
-              post.content = document.content
-              console.log("222222222")
-              console.log(document.content)
-              console.log('post content:')
-              console.log(post.content)
-              //return post
-          }else{
-              console.log("No such post document! " + qweetChange.user_id);
-              //qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
-          }
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-            //qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
-        });
-
-        //post.profile_pic = "https://media.vanityfair.com/photos/5ef25d9d184617200a49bac5/4:3/w_2999,h_2249,c_limit/M8DBATM_WB002.jpg"
-
-
-        //this.qweet_post.unshift(post)
-        return post
-    },
-    async get_post_content(){
-        var post_id = this.$route.query.id
-        console.log("post id " + post_id)
-        var post_cont = "a"
-        await db.collection('qweets').doc(post_id).get().then(snapshot => {
-        
-          const document = snapshot.data()
-          post_cont = document.content;
-          console.log("iiiiiii " + post_cont)
-          if(1==1){ //(document.exists) {
-              console.log("aaaaaaa " + post_cont)
-              //return document.content;
-              return post_cont
-          }else{
-              console.log("No such post document! " + qweetChange.user_id);
-              //qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
-          }
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-            //qweetChange.profile_pic = "https://i.pinimg.com/originals/bf/e5/fd/bfe5fd63c5124fbb3730c5b9e2d3bc01.png"
-        });
-        console.log("jjjjjj " + post_cont)
-        return post_cont;
-    },
-
-    /*
-    get_profile_pic(user_id){
-      console.log("hhhhhhhh")
-      console.log("aaaaaa" + this.get_user_id())
-      var docRef = db.collection("users").doc(user_id)
-      console.log("iiiiiii")
-      docRef.get().then((doc) => {
-        console.log(doc.data)
-      })
-      console.log("jjjjjj")
-      return ""
-    },
-    */
     addNewQweet() {
       let newQweet = {
         content: this.newQweetContent,
         user_id: this.user.user_doc_id,
         date: Date.now(),
-        liked: false
+        //liked: false
       }
       // this.qweets.unshift(newQweet)
-      db.collection('qweets').add(newQweet).then(function(docRef) {
+      db.collection('qweets').doc(this.post.id).collection('comments').add(newQweet).then(function(docRef) {
         console.log('User document written with ID: ', docRef.id)
       }).catch(function(error) {
         console.error('Error adding document: ', error)
@@ -287,9 +203,44 @@ export default {
     },
     goToPostPage(qweet) {
       this.$router.push('/post/?id=' + qweet.id)
-      //this.$router.push('/post/')
-      //this.$router.push({ path: 'post', query: { id: qweet.id } })
-      //this.$router.push({name: 'About', params: { postid: "11" }})
+    },
+    get_post_data(){
+        var post = {id: "", content: "", user_doc_id: ""}
+        post.id = this.$route.query.id
+        db.collection('qweets').doc(post.id).get().then(snapshot => {
+            const document = snapshot.data()
+            post.content = document.content;
+            post.user_doc_id = document.user_id;
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+        return post
+    },
+    render_page(post_id){
+        db.collection('qweets').doc(post_id).collection('comments').onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+            //console.log(change.doc.data())
+            let commentChange = change.doc.data()
+            console.log(change.doc.id)
+            commentChange.id = change.doc.id;
+
+            if (change.type === 'added') {
+            //console.log('New qweet: ', qweetChange)
+            this.qweets.unshift(commentChange)
+            }
+            if (change.type === 'modified') {
+            console.log('Modified qweet: ', commentChange)
+            let index = this.qweets.findIndex(qweet => qweet.id === commentChange.id)
+            Object.assign(this.qweets[index], commentChange)
+            }
+            if (change.type === 'removed') {
+            console.log('Removed qweet: ', commentChange)
+            let index = this.qweets.findIndex(qweet => qweet.id === commentChange.id)
+            this.qweets.splice(index, 1)
+            }
+        })
+        })
+
     }
   },
   filters: {
@@ -297,48 +248,34 @@ export default {
       return formatDistance(value, new Date())
     }
   },
-  mounted() {
-    this.postid =  this.$route.query.id
-
-    db.collection('qweets').doc(this.postid).get().then(snapshot => {
-        const document = snapshot.data()
-        this.post_cont = document.content;
-    }).catch((error) => {
-        console.log("Error getting document:", error);
-    });
-
-    
-    db.collection('qweets').orderBy('date').onSnapshot(snapshot => {
+   mounted() {
+       this.$watch(
+           () =>  this.$route.query, //this.$route.query.id,
+           (query) => {
+               this.qweets = []
+                this.user = {}
+                this.post = {}
+                this.newQweetContent = ''
+               console.log("hiiiiii " + query.id);
+                //this.render_page()
+                var post = this.get_post_data()
+                this.post = post    
+                this.render_page(query.id)
+           },
+       )
+       //this.$route.query.id
+    /*
+    db.collection('comments').onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         let qweetChange = change.doc.data()
         qweetChange.profile_pic = ""
         qweetChange.id = change.doc.id
         //qweetChange.profile_pic = "https://i.pinimg.com/originals/bb/d3/f1/bbd3f101733f1a7d8bdc9c6b5aed7776.png"
         
-
-        /*
-        var post_user_doc = db.collection('users').doc(qweetChange.user_id)
-        post_user_doc.get().then((doc) => {
-            if (doc.exists) {
-                console.log("Post user document data:", doc.data());
-                qweetChange.profile_pic = post_user_doc.profile_pic
-            } else {
-                // doc.data() will be undefined in this case
-                console.log("No such post user document! " + qweetChange.user_id);
-                qweetChange.profile_pic = ""
-            }
-            console.log("aaaaaaa " + JSON.parse(post_user_doc))
-            console.log("bbbbbbb1 " + JSON.stringify(post_user_doc)['profile_pic'])
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-            qweetChange.profile_pic = ""
-        });
-        */
+        
        // retrieve a document
       db.collection('users').doc(qweetChange.user_id).get().then(snapshot => {
           const document = snapshot.data()
-          //console.log("oooooooo")
-          //console.log(document)
           if(1==1){ //(document.exists) {
               console.log(document.profile_pic)
               qweetChange.profile_pic = document.profile_pic
@@ -369,6 +306,7 @@ export default {
         }
       })
     })
+    */
   }
 }
 </script>
@@ -389,6 +327,3 @@ export default {
 .qweet-icons
   margin-left: -5px
 </style>
-
-
-

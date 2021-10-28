@@ -1,8 +1,10 @@
 <template>
   <div id="app">
+      <button @click="showjoke()"> Show joke </button>
+      joke: {{joke}}
       {{ isGoogleLoggedin() }}
     <button @click="login()">Login</button>
-    Is login: ? {{ isLogin }}
+    <!--Is login: ? {{ isLogin }}-->
     <button @click="logOut()">LogOut</button>
   </div> 
 </template>
@@ -10,16 +12,29 @@
 <script>
 import db from 'src/boot/firebase'
 import { store } from '../store/store'
+import axios from 'axios';
+
 //import { el } from 'date-fns/locale';
 
 export default {
   name: "App",
   data() {
     return {
-      isLogin: this.isGoogleLoggedin(),
+        joke: ''
+      //isLogin: this.isGoogleLoggedin(),
     };
   },
   methods: {
+    async showjoke(access_token){
+        let config = {
+            headers:{
+                'Accept': 'application/json'
+            }
+        }
+        const joke = await axios.get("https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=" + access_token, config)
+        this.joke = joke.data
+        return joke.data
+    },
     does_user_already_exist(user_doc_id){
         console.log(user_doc_id)
         var docRef = db.collection("users").doc(user_doc_id);
@@ -69,9 +84,12 @@ export default {
         var currect_user_cookie = this.$cookie.get('current-user');
         if(currect_user_cookie){
             var currect_user_cookie_id = JSON.parse(this.$cookie.get('current-user')).user_doc_id;
+            console.log("get(current-user)).login_hint")
             var currect_user_cookie_token = JSON.parse(this.$cookie.get('current-user')).login_hint;
             //if(JSON.parse(currect_user_cookie).user_doc_id == )
+            console.log("currect_user_cookie_id")
             console.log(currect_user_cookie_id)
+            console.log("currect_user_cookie_token")
             console.log(currect_user_cookie_token)
             db.collection('users').doc(currect_user_cookie_id).get().then(snapshot => {
                 const document = snapshot.data()
@@ -99,14 +117,35 @@ export default {
         console.log(is_logged_in)
         if(is_logged_in == true){
             console.log("hiii")
-            this.$cookie.set('current-user', JSON.stringify(user));
+            //this.$cookie.set('current-user', JSON.stringify(user));
             store.commit('login');
             this.$router.push({name: 'Home'})
         }
         return is_logged_in
     },
 
+    getGoogleLoginInfo(google_user_token){
+        return {
+            "id": "101455158977837833130",
+            "email": "yagelardan@gmail.com",
+            "verified_email": true,
+            "name": "Yagel Ardan",
+            "given_name": "Yagel",
+            "family_name": "Ardan",
+            "picture": "https://lh3.googleusercontent.com/a/AATXAJzOgzOYpMDUrwPLZDQNKNCeDIgDwZbwqp46wFva=s96-c",
+            "locale": "en-GB"
+        }
+        var dataURL = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=youraccess_token';
+        console.log("ooooooo")
+        axios.get('https://api.coindesk.com/v1/bpi/currentprice.json').then(response => (
+            this.info = response
+            ))
+        console.log("mmmmmmmm")
+        console.log(this.info)
+    },
+
     async login() {
+      //console.log(this.getGoogleLoginInfo(""))
       const googleUser = await this.$gAuth.signIn();
       console.log("googleUser", googleUser);
       //this.$cookie.set('googleUser', JSON.stringify(googleUser));
@@ -117,27 +156,42 @@ export default {
         "getAuthResponse$G",
         this.$gAuth.GoogleAuth.currentUser.get().getAuthResponse()
       );
-      this.isLogin = this.$gAuth.isAuthorized;
+      this.isLogin = this.$gAuth.isAuthorized;  
+      this.accessToken = googleUser.getAuthResponse().access_token;
+      //var login_info = this.getGoogleLoginInfo(accessToken);
+
+
+      var login_info = await this.showjoke(this.accessToken);
+      console.log("iiiiiiiii")
+      console.log(login_info)
+
       if(this.isLogin == true){
             const user = {
                 login_source: "google",
-                userid: googleUser.ya,
-                login_hint: googleUser.$b.login_hint,
-                firstname: googleUser.it.HU,
-                lastname: googleUser.it.YS,
-                profile_pic: googleUser.it.kK,
-                mail: googleUser.it.Tt,
+                userid: login_info.id, //googleUser.ya,
+                login_hint: "", //googleUser.$b.login_hint,
+                firstname: login_info.given_name,
+                lastname: login_info.family_name,
+                profile_pic: login_info.picture,
+                mail: login_info.email,
             }
-            store.state.user.profile_pic = googleUser.it.kK
-
-            
-
+            store.state.user.profile_pic = login_info.picture
             var login_source = "google"
-            
             this.register_or_login_user(login_source, user);
-
       }
     },
+
+  },
+  mounted() {
+      console.log("jjjjj")
+      //this.isGoogleLoggedin()
+        var currect_user_cookie = this.$cookie.get('current-user');
+        //todo: not secured enough
+        if(currect_user_cookie){
+            store.commit('login');
+            this.$router.push({name: 'Home'})
+        }
+      console.log("mmmmmmm")
   },
 };
 </script>

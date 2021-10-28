@@ -3,8 +3,8 @@ import VueRouter from 'vue-router'
 
 import routes from './routes'
 
-
 import { store } from '../store/store'
+
 
 
 //store.state.user.loggedIn = true;
@@ -62,13 +62,13 @@ var VueCookie = require('vue-cookie');
 Vue.use(VueCookie);
 
 
+var VueAxios = require('axios');;
+Vue.use(VueAxios);
+
 //import Vuex from 'vuex'
 //Vue.use(Vuex)
 
 new Vue({
-  created(){
-    console.log("hiiiii")
-  },
   store: store,
   render: h => h(App),
 })//.$mount('#app')

@@ -1,6 +1,11 @@
 //import { store } from 'quasar/wrappers'
 import { store } from '../store/store'
 
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
 const routes = [
   {
@@ -15,6 +20,8 @@ const routes = [
         name: 'Home',
         beforeEnter: (to, from, next) => {
           if(!store.state.user.loggedIn){
+            //console.log("uuuuuuu")
+            //console.log(getCookie("current-user"))
           //if(!this.$cookie.get('current-user')){
             return next({
               name: 'Login'
@@ -31,7 +38,10 @@ const routes = [
       { 
         path: '/post',
         component: () => import('pages/PagePost.vue'),
-        name: 'Post'
+        name: 'Post',
+        beforeEnter: (to, from, next) => {
+          next()
+        }
       },
       { 
         path: '/login',
@@ -56,8 +66,7 @@ const routes = [
     component: () => import('pages/Error404.vue')
   }
 ]
-console.log("hhhhhhhhhhh")
-console.log(store.state.user.loggedIn)
+
 
 
 export default routes
