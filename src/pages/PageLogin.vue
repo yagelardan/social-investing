@@ -1,11 +1,10 @@
 <template>
   <div id="app">
-      <button @click="showjoke()"> Show joke </button>
+      <!--
       joke: {{joke}}
       {{ isGoogleLoggedin() }}
-    <button @click="login()">Login</button>
-    <!--Is login: ? {{ isLogin }}-->
-    <button @click="logOut()">LogOut</button>
+      -->
+      <button type="button" @click="login()" class="login-with-google-btn" >Sign in with Google</button>
   </div> 
 </template>
 
@@ -124,28 +123,7 @@ export default {
         return is_logged_in
     },
 
-    getGoogleLoginInfo(google_user_token){
-        return {
-            "id": "101455158977837833130",
-            "email": "yagelardan@gmail.com",
-            "verified_email": true,
-            "name": "Yagel Ardan",
-            "given_name": "Yagel",
-            "family_name": "Ardan",
-            "picture": "https://lh3.googleusercontent.com/a/AATXAJzOgzOYpMDUrwPLZDQNKNCeDIgDwZbwqp46wFva=s96-c",
-            "locale": "en-GB"
-        }
-        var dataURL = 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=youraccess_token';
-        console.log("ooooooo")
-        axios.get('https://api.coindesk.com/v1/bpi/currentprice.json').then(response => (
-            this.info = response
-            ))
-        console.log("mmmmmmmm")
-        console.log(this.info)
-    },
-
     async login() {
-      //console.log(this.getGoogleLoginInfo(""))
       const googleUser = await this.$gAuth.signIn();
       console.log("googleUser", googleUser);
       //this.$cookie.set('googleUser', JSON.stringify(googleUser));
@@ -158,8 +136,6 @@ export default {
       );
       this.isLogin = this.$gAuth.isAuthorized;  
       this.accessToken = googleUser.getAuthResponse().access_token;
-      //var login_info = this.getGoogleLoginInfo(accessToken);
-
 
       var login_info = await this.showjoke(this.accessToken);
       console.log("iiiiiiiii")
@@ -182,7 +158,7 @@ export default {
     },
 
   },
-  mounted() {
+  beforeMount() {
       console.log("jjjjj")
       //this.isGoogleLoggedin()
         var currect_user_cookie = this.$cookie.get('current-user');
@@ -203,6 +179,39 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 10em;
 }
+
+.login-with-google-btn {
+  transition: background-color 0.3s, box-shadow 0.3s;
+  padding: 9px 62px 12px 90px;
+  border: none;
+  border-radius: 3px;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.85);
+  color: #757575;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNCAxMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=);
+  background-color: white;
+  background-repeat: no-repeat;
+  background-position: 20px 11px;
+}
+.login-with-google-btn:hover {
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.login-with-google-btn:active {
+  background-color: #eeeeee;
+}
+.login-with-google-btn:focus {
+  outline: none;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.75), 0 0 0 3px #c8dafc;
+}
+.login-with-google-btn:disabled {
+  filter: grayscale(100%);
+  background-color: #ebebeb;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
+
 </style>

@@ -15,6 +15,7 @@
           
             <template v-slot:before>
               <q-avatar size="xl">
+                
                 <img :src="user.profile_pic">
               </q-avatar>
             </template>
@@ -60,9 +61,9 @@
 
             <q-item-section>
               <q-item-label class="text-subtitle1">
-                <strong>Danny Connell</strong>
+                <strong>{{qweet.user_name}} </strong>
                 <span class="text-grey-7">
-                  @danny__connell 
+                  {{qweet.user_at}}
                   <br class="lt-md">&bull; {{ qweet.date | relativeDate }}
                 </span>
               </q-item-label>
@@ -73,6 +74,7 @@
                   icon="far fa-comment"
                   size="sm"
                   flat
+                  :label="hi()"
                   round
                   to=""
                   @click="goToPostPage(qweet)"
@@ -140,6 +142,9 @@ export default {
     }
   },
   methods: {
+    hi(){
+      return "2"
+    },
     get_user(){
       var user = JSON.parse(this.$cookie.get('current-user'))
       return user;
@@ -158,6 +163,7 @@ export default {
     },
     */
     addNewQweet() {
+      console.log(this.user.user_doc_id)
       let newQweet = {
         content: this.newQweetContent,
         user_id: this.user.user_doc_id,
@@ -185,11 +191,13 @@ export default {
       })
       .then(function() {
         console.log('Document successfully updated!')
+
       })
       .catch(function(error) {
         // The document probably doesn't exist.
         console.error('Error updating document: ', error)
       })
+
     },
     goToPostPage(qweet) {
       this.$router.push('/post/?id=' + qweet.id)
@@ -236,8 +244,13 @@ export default {
           console.log("oooooooo")
           console.log(document)
           if(1==1){ //(document.exists) {
+
               console.log(document.profile_pic)
               qweetChange.profile_pic = document.profile_pic
+              qweetChange.user_name = document.firstname + ' ' + document.lastname;
+              qweetChange.user_at = "@yagelA"
+              
+
           }else{
               console.log("No such post user document! " + qweetChange.user_id);
               qweetChange.profile_pic = ""

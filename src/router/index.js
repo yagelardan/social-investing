@@ -62,8 +62,10 @@ var VueCookie = require('vue-cookie');
 Vue.use(VueCookie);
 
 
-var VueAxios = require('axios');;
+var VueAxios = require('axios');
+console.log("use axios")
 Vue.use(VueAxios);
+
 
 //import Vuex from 'vuex'
 //Vue.use(Vuex)

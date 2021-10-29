@@ -12,7 +12,7 @@
               <q-item-label class="text-subtitle1">
                 <strong>Yagel Ardan</strong>
                 <span class="text-grey-7">
-                  @danny__connell 
+                  @danny__connella
                   <!--<br class="lt-md">&bull; {{ get_post().date | relativeDate }}-->
                 </span>
               </q-item-label>
@@ -84,7 +84,7 @@
                 <strong>Danny Connell</strong>
                 <span class="text-grey-7">
                   @danny__connell 
-                  <br class="lt-md">&bull; {{ qweet.date }} //| relativeDate }}
+                  <!--<br class="lt-md">&bull; {{ qweet.date }} //| relativeDate }}-->
                 </span>
               </q-item-label>
               <q-item-label class="qweet-content text-body1">{{ qweet.content }}</q-item-label>
@@ -144,12 +144,13 @@ export default {
     //var post = this.get_post_data()
 
     //this.render_page(post.id)
+        var user_doc_id = this.get_user().user_doc_id
         var post = this.get_post_data()
         this.post = post    
         this.render_page(post.id)
     
     return {
-      user: {},
+      user: {'user_doc_id': user_doc_id},
       post: post,
       newQweetContent: '',
       qweets: [
