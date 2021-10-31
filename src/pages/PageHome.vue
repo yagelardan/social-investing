@@ -1,6 +1,6 @@
 <template>
   <q-page class="relative-position">
-    <q-scroll-area class="absolute full-width full-height">
+    <q-scroll-area class="absolute full-width full-height" id="center_page" @scroll="onScroll"> 
       <div class="q-py-lg q-px-md row items-end q-col-gutter-md">
         <div class="col">
           <q-input
@@ -66,27 +66,14 @@
                   {{qweet.user_at}}
                   <br class="lt-md">&bull; {{ qweet.date | relativeDate }}
                 </span>
+
               </q-item-label>
+              
               <q-item-label class="qweet-content text-body1">{{ qweet.content }}</q-item-label>
-              <div class="qweet-icons row justify-between q-mt-sm">
-                <q-btn
-                  color="grey"
-                  icon="far fa-comment"
-                  size="sm"
-                  flat
-                  :label="hi()"
-                  round
-                  to=""
-                  @click="goToPostPage(qweet)"
-                />
-                <q-btn
-                  color="grey"
-                  icon="fas fa-retweet"
-                  size="sm"
-                  flat
-                  round
-                />
-                <q-btn
+              <div class="qweet-icons row justify-start q-mt-sm">
+
+                <div class="col-4">
+                <q-btn 
                   @click="toggleLiked(qweet)"
                   :color="qweet.liked ? 'pink' : 'grey'"
                   :icon="qweet.liked ? 'fas fa-heart' : 'far fa-heart'"
@@ -94,7 +81,21 @@
                   flat
                   round
                 />
-                <q-btn
+                </div>
+                <div class="col-4">
+                  <q-btn class=""
+                    color="grey"
+                    icon="far fa-comment"
+                    size="sm"
+                    flat
+                    :label="hi(qweet)"
+                    round
+                    to=""
+                    @click="goToPostPage(qweet)"
+                  />
+                </div>
+                <div class="col-4">
+                <q-btn v-if="does_current_user(qweet.user_id)"
                   @click="deleteQweet(qweet)"
                   color="grey"
                   icon="fas fa-trash"
@@ -102,6 +103,8 @@
                   flat
                   round
                 />
+              </div>
+                
               </div>
             </q-item-section>
           </q-item>
@@ -142,8 +145,18 @@ export default {
     }
   },
   methods: {
-    hi(){
+    hi(qw){
+
       return "2"
+    },
+    does_current_user(user_id){
+      //console.log("jjjjjjjj")
+      //console.log(user_id)
+      //console.log(this.user.id)
+        if(user_id == this.user.id){
+          return true
+        }
+        return false
     },
     get_user(){
       var user = JSON.parse(this.$cookie.get('current-user'))
@@ -163,12 +176,12 @@ export default {
     },
     */
     addNewQweet() {
-      console.log(this.user.user_doc_id)
+      console.log(this.user.id)
       let newQweet = {
         content: this.newQweetContent,
-        user_id: this.user.user_doc_id,
+        user_id: this.user.id,
         date: Date.now(),
-        liked: false
+        liked: false,
       }
       // this.qweets.unshift(newQweet)
       db.collection('qweets').add(newQweet).then(function(docRef) {
@@ -204,6 +217,20 @@ export default {
       //this.$router.push('/post/')
       //this.$router.push({ path: 'post', query: { id: qweet.id } })
       //this.$router.push({name: 'About', params: { postid: "11" }})
+    },
+    onScroll(){
+      //console.log(window.scrollY)
+      //console.log("scrolled")
+      //let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
+      //console.log(document.documentElement.scrollTop) 0
+      //console.log(window.innerHeight) 306
+      //alert(document.getElementById('app').scrollTop)
+      
+      //console.log(window.scrollY);
+      //var position = document.getElementById('center_page').scrollHeight;
+      //console.log(position)
+
+      //console.log(document.documentElement.offsetHeight)
     }
   },
   filters: {
@@ -212,6 +239,8 @@ export default {
     }
   },
   mounted() {
+    window.addEventListener("scroll", this.onScroll);
+
     db.collection('qweets').orderBy('date').onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         let qweetChange = change.doc.data()
@@ -241,16 +270,14 @@ export default {
        // retrieve a document
       db.collection('users').doc(qweetChange.user_id).get().then(snapshot => {
           const document = snapshot.data()
-          console.log("oooooooo")
-          console.log(document)
+          //console.log("oooooooo")
+          //console.log(document)
           if(1==1){ //(document.exists) {
 
               console.log(document.profile_pic)
               qweetChange.profile_pic = document.profile_pic
               qweetChange.user_name = document.firstname + ' ' + document.lastname;
-              qweetChange.user_at = "@yagelA"
-              
-
+              qweetChange.user_at = document.at
           }else{
               console.log("No such post user document! " + qweetChange.user_id);
               qweetChange.profile_pic = ""
@@ -278,6 +305,9 @@ export default {
         }
       })
     })
+  },
+  beforeDestroy(){
+    window.removeEventListener('scroll', this.onScroll)
   }
 }
 </script>

@@ -44,6 +44,14 @@ const routes = [
         }
       },
       { 
+        path: '/company',
+        component: () => import('pages/PageCompany.vue'),
+        name: 'Company',
+        beforeEnter: (to, from, next) => {
+          next()
+        }
+      },
+      { 
         path: '/login',
         component: () => import('pages/PageLogin.vue'),
         name: 'Login',

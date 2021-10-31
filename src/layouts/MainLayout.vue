@@ -9,7 +9,7 @@
           <span class="gt-sm">{{ $route.name }}</span>
           <q-icon
             class="header-icon q-pa-md lt-md"
-            name="fas fa-dove"
+            name="fas fa-rocket"
             size="sm"
             color="primary"
           />
@@ -27,7 +27,7 @@
     >
       <q-icon
         class="q-pa-md"
-        name="fas fa-dove"
+        name="fas fa-rocket"
         size="lg"
         color="primary"
       />
@@ -57,6 +57,9 @@
 
           <q-item-section class="text-h6 text-weight-bold">About</q-item-section>
         </q-item>
+
+
+        
         <div style="bottom: 1em; position: absolute;">
           <q-item
             to="/about"

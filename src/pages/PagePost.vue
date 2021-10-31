@@ -4,15 +4,14 @@
       <div class="q-py-lg q-px-md row items-end q-col-gutter-md">
             <q-item-section avatar top>
               <q-avatar size="xl">
-                <!--<img :src="get_post().profile_pic">-->
-                <img src="">
+                <img :src="postuser.profile_pic">
               </q-avatar>
             </q-item-section>
             <q-item-section>
               <q-item-label class="text-subtitle1">
-                <strong>Yagel Ardan</strong>
+                <strong>{{postuser.name}}</strong>
                 <span class="text-grey-7">
-                  @danny__connella
+                  {{postuser.at}}
                   <!--<br class="lt-md">&bull; {{ get_post().date | relativeDate }}-->
                 </span>
               </q-item-label>
@@ -51,7 +50,7 @@
             :disable="!newQweetContent"
             class="q-mb-lg"
             color="primary"
-            label="Qweet"
+            label="Post"
             rounded
             unelevated
             no-caps
@@ -75,15 +74,15 @@
             <q-item-section avatar top>
               <q-avatar size="xl">
                 
-                <img :src="qweet.profile_pic">
+                <img :src="qweet.user.profile_pic">
               </q-avatar>
             </q-item-section>
             
             <q-item-section>
               <q-item-label class="text-subtitle1">
-                <strong>Danny Connell</strong>
+                <strong>{{qweet.user.name}}</strong>
                 <span class="text-grey-7">
-                  @danny__connell 
+                  {{qweet.user.at}}
                   <!--<br class="lt-md">&bull; {{ qweet.date }} //| relativeDate }}-->
                 </span>
               </q-item-label>
@@ -144,13 +143,14 @@ export default {
     //var post = this.get_post_data()
 
     //this.render_page(post.id)
-        var user_doc_id = this.get_user().user_doc_id
+        var user = this.get_user()
         var post = this.get_post_data()
         this.post = post    
         this.render_page(post.id)
     
     return {
-      user: {'user_doc_id': user_doc_id},
+      postuser: {id: "", name: "", at: "", profile_pic: ""},
+      user: user,
       post: post,
       newQweetContent: '',
       qweets: [
@@ -171,7 +171,7 @@ export default {
     addNewQweet() {
       let newQweet = {
         content: this.newQweetContent,
-        user_id: this.user.user_doc_id,
+        user_id: this.user.id,
         date: Date.now(),
         //liked: false
       }
@@ -206,24 +206,46 @@ export default {
       this.$router.push('/post/?id=' + qweet.id)
     },
     get_post_data(){
-        var post = {id: "", content: "", user_doc_id: ""}
+        var post = {id: "", content: "", user_id: ""}
         post.id = this.$route.query.id
         db.collection('qweets').doc(post.id).get().then(snapshot => {
             const document = snapshot.data()
             post.content = document.content;
-            post.user_doc_id = document.user_id;
+            post.user_id = document.user_id;
         }).catch((error) => {
             console.log("Error getting document:", error);
         });
         return post
     },
     render_page(post_id){
+        db.collection('qweets').doc(post_id).get().then(snapshot => {
+            const document = snapshot.data()
+            this.postuser.id = document.user_id
+            db.collection('users').doc(this.postuser.id).get().then(snps => {
+                    const doc = snps.data()
+                    this.postuser.name = doc.firstname + ' ' + doc.lastname
+                    this.postuser.at = doc.at
+                    this.postuser.profile_pic = doc.profile_pic
+            })
+        })
+
+
         db.collection('qweets').doc(post_id).collection('comments').onSnapshot(snapshot => {
         snapshot.docChanges().forEach(change => {
             //console.log(change.doc.data())
             let commentChange = change.doc.data()
-            console.log(change.doc.id)
+            
             commentChange.id = change.doc.id;
+            
+            commentChange.user = {id: "", name: "", profile_pic: ""}
+            commentChange.user.id = change.doc.data().user_id
+
+            db.collection('users').doc(commentChange.user.id).get().then(snps => {
+                const doc = snps.data()
+                commentChange.user.name = doc.firstname + ' ' + doc.lastname
+                commentChange.user.at = doc.at
+                commentChange.user.profile_pic = doc.profile_pic
+            })
 
             if (change.type === 'added') {
             //console.log('New qweet: ', qweetChange)
@@ -249,12 +271,13 @@ export default {
       return formatDistance(value, new Date())
     }
   },
-   mounted() {
+
+   beforeMount() {
        this.$watch(
            () =>  this.$route.query, //this.$route.query.id,
-           (query) => {
-               this.qweets = []
-                this.user = {}
+           (query) => {               
+                this.qweets = []
+                this.user = this.get_user()
                 this.post = {}
                 this.newQweetContent = ''
                console.log("hiiiiii " + query.id);
@@ -262,6 +285,8 @@ export default {
                 var post = this.get_post_data()
                 this.post = post    
                 this.render_page(query.id)
+
+
            },
        )
        //this.$route.query.id
@@ -308,6 +333,9 @@ export default {
       })
     })
     */
+  },
+  beforeDestroy(){
+      alert(1)
   }
 }
 </script>
