@@ -9,6 +9,14 @@
 </template>
 
 <script>
+//console.log(this.$route)
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const product = urlParams.get('post')
+console.log("aaaaa")
+console.log(this.$route.query.page)
+
+
 export default {
   name: 'PageAbout'
 }

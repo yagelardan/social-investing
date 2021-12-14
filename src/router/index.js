@@ -3,7 +3,15 @@ import VueRouter from 'vue-router'
 
 import routes from './routes'
 
+import { store } from '../store/store'
+
+
+
+//store.state.user.loggedIn = true;
+//console.log(store.state.user.loggedIn)
+
 Vue.use(VueRouter)
+
 
 
 
@@ -33,6 +41,8 @@ export default function (/* { store, ssrContext } */) {
 
 
 import App from 'pages/PageLogin.vue'
+import MainLayout from 'layouts/MainLayout.vue'
+import Post from 'pages/PagePost.vue'
 
 Vue.config.productionTip = false
 
@@ -45,14 +55,34 @@ const gauthOption = {
 }
 Vue.use(GAuth, gauthOption)
 
+
 // Require dependencies
 var VueCookie = require('vue-cookie');
 // Tell Vue to use the plugin
 Vue.use(VueCookie);
 
 
+var VueAxios = require('axios');
+console.log("use axios")
+Vue.use(VueAxios);
+
+
+//import Vuex from 'vuex'
+//Vue.use(Vuex)
+
 new Vue({
+  store: store,
   render: h => h(App),
-}).$mount('#app')
+})//.$mount('#app')
 
 
+
+new Vue({
+  store: store,
+  render: h => h(MainLayout),
+})//.$mount('#Logout')
+
+new Vue({
+  store: store,
+  render: h => h(Post),
+})//.$mount('#Logout')

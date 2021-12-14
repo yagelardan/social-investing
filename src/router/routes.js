@@ -1,13 +1,34 @@
+//import { store } from 'quasar/wrappers'
+import { store } from '../store/store'
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
 const routes = [
   {
+    
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
+        // todo: change to dashboard
         path: '',
         component: () => import('pages/PageHome.vue'),
-        name: 'Home'
+        name: 'Home',
+        beforeEnter: (to, from, next) => {
+          if(!store.state.user.loggedIn){
+            //console.log("uuuuuuu")
+            //console.log(getCookie("current-user"))
+          //if(!this.$cookie.get('current-user')){
+            return next({
+              name: 'Login'
+            })
+          }
+          next()
+        }
       },
       { 
         path: '/about',
@@ -15,9 +36,33 @@ const routes = [
         name: 'About'
       },
       { 
+        path: '/post',
+        component: () => import('pages/PagePost.vue'),
+        name: 'Post',
+        beforeEnter: (to, from, next) => {
+          next()
+        }
+      },
+      { 
+        path: '/company',
+        component: () => import('pages/PageCompany.vue'),
+        name: 'Company',
+        beforeEnter: (to, from, next) => {
+          next()
+        }
+      },
+      { 
         path: '/login',
         component: () => import('pages/PageLogin.vue'),
-        name: 'Login'
+        name: 'Login',
+        beforeEnter: (to, from, next) => {
+          if(store.state.user.loggedIn){
+            return next({
+              name: 'Home'
+            })
+          }
+          next()
+        }
       }
     ]
   },
@@ -29,5 +74,7 @@ const routes = [
     component: () => import('pages/Error404.vue')
   }
 ]
+
+
 
 export default routes
